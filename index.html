@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI TikTok AutoPost</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f6f7f9;
+    color: #111827;
+}
+
+.header {
+    background: #111111;
+    color: white;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.logo span {
+    color: #fe2c55;
+}
+
+.header small {
+    color: #c7c7c7;
+}
+
+.container {
+    width: min(1000px, 92%);
+    margin: 45px auto;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    margin: 0 0 12px;
+}
+
+.hero p {
+    color: #6b7280;
+    font-size: 17px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.07);
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.connect-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: #9ca3af;
+    border-radius: 50%;
+}
+
+.dot.connected {
+    background: #16a34a;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 13px 22px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.tiktok-btn {
+    background: #fe2c55;
+    color: white;
+}
+
+.tiktok-btn:hover {
+    background: #e51f46;
+}
+
+.upload-area {
+    border: 2px dashed #d1d5db;
+    border-radius: 14px;
+    padding: 45px 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: #fe2c55;
+}
+
+.upload-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    margin-top: 15px;
+    font-weight: 600;
+    color: #374151;
+}
+
+textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    margin-top: 8px;
+}
+
+.publish {
+    width: 100%;
+    background: #111827;
+    color: white;
+    font-size: 17px;
+    margin-top: 20px;
+}
+
+.publish:hover {
+    background: #000;
+}
+
+.publish:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.notice {
+    display: none;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-top: 15px;
+    background: #ecfdf5;
+    color: #166534;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 15px;
+}
+
+.step {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #111827;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.footer {
+    text-align: center;
+    color: #9ca3af;
+    padding: 30px;
+    font-size: 13px;
+}
+
+@media(max-width:700px) {
+    .connect-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .steps {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">
+        <span>AI</span> TikTok AutoPost
+    </div>
+    <small>Content Publishing Studio</small>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <h1>AI TikTok AutoPost</h1>
+        <p>Create, prepare and upload your video content to TikTok.</p>
+    </section>
+
+    <section class="card">
+        <h2>1. Connect TikTok</h2>
+
+        <div class="connect-box">
+
+            <div class="status">
+                <div id="statusDot" class="dot"></div>
+
+                <div>
+                    <strong id="statusText">
+                        TikTok account not connected
+                    </strong>
+                    <br>
+                    <small>
+                        Connect your TikTok account to continue.
+                    </small>
+                </div>
+            </div>
+
+            <button
+                class="tiktok-btn"
+                onclick="connectTikTok()">
+                Connect with TikTok
+            </button>
+
+        </div>
+
+        <div id="connectNotice" class="notice">
+            Authorization request started. Please continue with TikTok.
+        </div>
+    </section>
+
+
+    <section class="card">
+
+        <h2>2. Select video</h2>
+
+        <label class="upload-area" for="videoInput">
+
+            <div class="upload-icon">🎬</div>
+
+            <strong>
+                Select a video file
+            </strong>
+
+            <p>
+                MP4 or MOV video
+            </p>
+
+            <input
+                id="videoInput"
+                type="file"
+                accept="video/mp4,video/quicktime">
+
+            <div
+                id="fileName"
+                class="file-name">
+            </div>
+
+        </label>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>3. Post settings</h2>
+
+        <label>
+            Caption
+        </label>
+
+        <br><br>
+
+        <textarea
+            id="caption"
+            placeholder="Write your TikTok caption..."></textarea>
+
+        <br><br>
+
+        <label>
+            Privacy
+        </label>
+
+        <select id="privacy">
+            <option value="SELF_ONLY">
+                Only me
+            </option>
+
+            <option value="MUTUAL_FOLLOW_FRIENDS">
+                Friends
+            </option>
+
+            <option value="PUBLIC_TO_EVERYONE">
+                Everyone
+            </option>
+        </select>
+
+        <button
+            id="publishBtn"
+            class="publish"
+            disabled
+            onclick="uploadToTikTok()">
+
+            Upload to TikTok
+
+        </button>
+
+        <div
+            id="uploadNotice"
+            class="notice">
+        </div>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>How it works</h2>
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <strong>
+                    Connect TikTok
+                </strong>
+
+                <p>
+                    Authorize your TikTok account securely.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <strong>
+                    Prepare content
+                </strong>
+
+                <p>
+                    Select your video and add your caption.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <strong>
+                    Upload
+                </strong>
+
+                <p>
+                    Send your content to TikTok.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    AI TikTok AutoPost · TikTok Content Posting Integration
+</footer>
+
+
+<script>
+
+/*
+ * TikTok application configuration
+ *
+ * IMPORTANT:
+ * Never put your TikTok Client Secret in this file.
+ */
+
+const CLIENT_KEY = "awqxp4nlbanq7yub";
+
+const REDIRECT_URI =
+    "https://mkfrjg.ez8n.com/rest/oauth2-credential/callback";
+
+const SCOPES =
+    "user.info.basic,video.upload";
+
+
+function connectTikTok() {
+
+    /*
+     * Generate a random state value.
+     * This is used to make the OAuth request safer.
+     */
+
+    const state =
+        crypto.randomUUID();
+
+    sessionStorage.setItem(
+        "tiktok_oauth_state",
+        state
+    );
+
+    const authUrl =
+        "https://www.tiktok.com/v2/auth/authorize/" +
+        "?client_key=" +
+        encodeURIComponent(CLIENT_KEY) +
+        "&scope=" +
+        encodeURIComponent(SCOPES) +
+        "&response_type=code" +
+        "&redirect_uri=" +
+        encodeURIComponent(REDIRECT_URI) +
+        "&state=" +
+        encodeURIComponent(state);
+
+    document.getElementById(
+        "connectNotice"
+    ).style.display = "block";
+
+    window.location.href = authUrl;
+}
+
+
+const videoInput =
+    document.getElementById("videoInput");
+
+videoInput.addEventListener(
+    "change",
+    function() {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        document.getElementById(
+            "fileName"
+        ).textContent =
+            "Selected: " + file.name;
+
+        document.getElementById(
+            "publishBtn"
+        ).disabled = false;
+    }
+);
+
+
+function uploadToTikTok() {
+
+    const file =
+        videoInput.files[0];
+
+    const notice =
+        document.getElementById(
+            "uploadNotice"
+        );
+
+    if (!file) {
+
+        alert(
+            "Please select a video first."
+        );
+
+        return;
+    }
+
+    notice.style.display =
+        "block";
+
+    notice.innerHTML =
+        "Video is ready to be uploaded to TikTok.";
+
+    /*
+     * Actual Content Posting API upload
+     * is handled by the server-side integration.
+     *
+     * Do NOT place your client secret
+     * or access token in this browser code.
+     */
+
+}
+
+
+</script>
+
+</body>
+</html>
